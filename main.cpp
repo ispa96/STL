@@ -23,7 +23,7 @@ bool operator==(const Pacient& p1,const Doctor& d2) {
 
 int main()
 {
-    ifstream inFile("input.txt");
+    ifstream inFile("input3.txt");
 
     int no_problems, no_doctors;
     string name, speciality;
