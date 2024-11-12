@@ -20,7 +20,7 @@ struct Pacient
     unsigned int duration;
 };
 
-bool operator==(const Pacient& p1,const Doctor& d2) {
+bool operator==(const Pacient& p1, const Doctor& d2) {
     if (p1.disease == d2.speciality and d2.available == true) {
         return true;
     }
@@ -35,7 +35,7 @@ int main()
     std::string name, speciality;
     std::vector<Doctor> doctors;
     std::vector<Pacient> pacients;
-    
+
     inFile >> no_problems;
 
     for (int i = 0; i < no_problems; i++) {
@@ -67,15 +67,21 @@ int main()
     }
 
     for (auto& pacient : pacients) {
-        auto lam = std::find_if(doctors.begin(), doctors.end(), [&](Doctor& doc) {
+        auto it = std::find_if(doctors.begin(), doctors.end(), [&pacient](Doctor& doc) {
             if (doc.speciality == pacient.disease) {
                 if (doc.start + pacient.duration <= doc.finish) {
-                    doc.start += pacient.duration;
-                    doc.problems.emplace_back(pacient.name);
                     return true;
                 }
+                else return false;
             }
+            else return false;
         });
+
+        if (it != doctors.end()) {
+            (*it).start += pacient.duration;
+            (*it).problems.emplace_back(pacient.name);
+        }
+        /// else nu face nimic
     }
 
     for (auto& doctor : doctors) {
