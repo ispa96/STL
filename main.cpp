@@ -3,37 +3,38 @@
 #include <string>
 #include <vector>
 
-using namespace std;
+
 struct Doctor
 {
-    string d_name;
-    string d_speciality;
+    std::string d_name;
+    std::string d_speciality;
+    bool available = true;  /// by default este true
 };
 struct Pacient
 {
-    string p_name;
-    string p_speciality;
+    std::string p_name;
+    std::string p_speciality;
 };
 
 bool operator==(const Pacient& p1,const Doctor& d2) {
-    if (p1.p_speciality == d2.d_speciality)
+    if (p1.p_speciality == d2.d_speciality and d2.available == true) {
         return true;
+    }
     else return false;
 }
 
 int main()
 {
-    ifstream inFile("input3.txt");
+    std::ifstream inFile("input.txt");
 
     int no_problems, no_doctors;
-    string name, speciality;
+    std::string name, speciality;
     std::vector<Doctor> doctors;
     std::vector<Pacient> pacients;
     
     inFile >> no_problems;
 
-    for (int i = 0; i < no_problems; i++)
-    {
+    for (int i = 0; i < no_problems; i++) {
         inFile >> name;
         inFile >> speciality;
 
@@ -47,8 +48,7 @@ int main()
 
     inFile >> no_doctors;
 
-    for (int i = 0; i < no_doctors; i++)
-    {
+    for (int i = 0; i < no_doctors; i++) {
         inFile >> name;
         inFile >> speciality;
 
@@ -62,9 +62,12 @@ int main()
 
     for (auto& pacient : pacients) {
         auto it = find(doctors.begin(), doctors.end(), pacient);
-        if (it == doctors.end())
-            std::cout << pacient.p_name << ' ' << "Respins\n";
-        else std::cout << pacient.p_name << ' ' << "Acceptat\n";  
+        unsigned int pos = std::distance(doctors.begin(), it);
+
+        if (it != doctors.end()) {
+            doctors[pos].available = false;
+            std::cout << doctors[pos].d_name << ' ' << doctors[pos].d_speciality << '\n';
+        }
     }
 
     return 0;
