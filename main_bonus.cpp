@@ -5,8 +5,8 @@
 
 struct Doctor
 {
-    std::string d_name;
-    std::string d_speciality;
+    std::string name;
+    std::string speciality;
     bool available = true;  /// by default este true
     unsigned int start = 9;
     unsigned int finish = 17;
@@ -15,13 +15,13 @@ struct Doctor
 
 struct Pacient
 {
-    std::string p_name;
-    std::string p_speciality;
+    std::string name;
+    std::string disease;
     unsigned int duration;
 };
 
 bool operator==(const Pacient& p1,const Doctor& d2) {
-    if (p1.p_speciality == d2.d_speciality and d2.available == true) {
+    if (p1.disease == d2.speciality and d2.available == true) {
         return true;
     }
     else return false;
@@ -44,8 +44,8 @@ int main()
         inFile >> _duration;
 
         Pacient p;
-        p.p_name = name;
-        p.p_speciality = speciality;
+        p.name = name;
+        p.disease = speciality;
         p.duration = _duration;
         pacients.emplace_back(p);
 
@@ -59,8 +59,8 @@ int main()
         inFile >> speciality;
 
         Doctor d;
-        d.d_name = name;
-        d.d_speciality = speciality;
+        d.name = name;
+        d.speciality = speciality;
         doctors.emplace_back(d);
 
         // cout << name << ' ' << speciality << '\n';
@@ -68,10 +68,10 @@ int main()
 
     for (auto& pacient : pacients) {
         auto lam = std::find_if(doctors.begin(), doctors.end(), [&](Doctor& doc) {
-            if (doc.d_speciality == pacient.p_speciality) {
+            if (doc.speciality == pacient.disease) {
                 if (doc.start + pacient.duration <= doc.finish) {
                     doc.start += pacient.duration;
-                    doc.problems.emplace_back(pacient.p_name);
+                    doc.problems.emplace_back(pacient.name);
                     return true;
                 }
             }
@@ -79,7 +79,7 @@ int main()
     }
 
     for (auto& doctor : doctors) {
-        std::cout << doctor.d_name << ' ' << doctor.problems.size() << ' ';
+        std::cout << doctor.name << ' ' << doctor.problems.size() << ' ';
 
         for (auto& problem : doctor.problems)
             std::cout << problem << ' ';
