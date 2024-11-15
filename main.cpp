@@ -6,18 +6,18 @@
 
 struct Doctor
 {
-    std::string d_name;
-    std::string d_speciality;
+    std::string name;
+    std::string speciality;
     bool available = true;  /// by default este true
 };
 struct Pacient
 {
-    std::string p_name;
-    std::string p_speciality;
+    std::string name;
+    std::string disease;
 };
 
 bool operator==(const Pacient& p1,const Doctor& d2) {
-    if (p1.p_speciality == d2.d_speciality and d2.available == true) {
+    if (p1.disease == d2.speciality and d2.available == true) {
         return true;
     }
     else return false;
@@ -25,7 +25,7 @@ bool operator==(const Pacient& p1,const Doctor& d2) {
 
 int main()
 {
-    std::ifstream inFile("input.txt");
+    std::ifstream inFile("input3.txt");
 
     int no_problems, no_doctors;
     std::string name, speciality;
@@ -39,8 +39,8 @@ int main()
         inFile >> speciality;
 
         Pacient p;
-        p.p_name = name;
-        p.p_speciality = speciality;
+        p.name = name;
+        p.disease = speciality;
         pacients.emplace_back(p);
 
         // cout << name << ' ' << speciality << '\n';
@@ -53,22 +53,27 @@ int main()
         inFile >> speciality;
 
         Doctor d;
-        d.d_name = name;
-        d.d_speciality = speciality;
+        d.name = name;
+        d.speciality = speciality;
         doctors.emplace_back(d);
 
         // cout << name << ' ' << speciality << '\n';
     }
 
     for (auto& pacient : pacients) {
-        auto it = find(doctors.begin(), doctors.end(), pacient);
-        unsigned int pos = std::distance(doctors.begin(), it);
+        auto it = find_if(doctors.begin(), doctors.end(), [&pacient](const Doctor& doc) {
+            if (doc.speciality == pacient.disease and doc.available == true)
+                return true;
+            else return false;
+        });
 
         if (it != doctors.end()) {
-            doctors[pos].available = false;
-            std::cout << doctors[pos].d_name << ' ' << doctors[pos].d_speciality << '\n';
+            (*it).available = false;    /// devine ocupat
+            std::cout << (*it).name << ' ' << (*it).speciality << '\n';
         }
     }
+
+
 
     return 0;
 }
