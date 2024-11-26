@@ -3,6 +3,7 @@
 #include <fstream>
 #include <string>
 #include <vector>
+#include <stack>
 
 struct Doctor
 {
@@ -74,10 +75,16 @@ int main()
 
     /// sortam vectorul de pacienti in functie de prioritate
     sort(pacients.begin(), pacients.end(), [](const Pacient& pacient1, const Pacient& pacient2) {
-        return pacient1.priority > pacient2.priority;
+        return pacient1.priority < pacient2.priority;
     });
 
-    for (const auto& pacient : pacients) {
+    std::stack<Pacient> pacients_stack;
+    for (auto& pacient : pacients)
+        pacients_stack.push(pacient);
+
+    while(!pacients_stack.empty()) {
+        Pacient pacient = pacients_stack.top();
+
         auto it = find_if(doctors.begin(), doctors.end(), [&pacient](Doctor& doctor) {
             if (pacient.disease == doctor.speciality) {
                 if (doctor.start + pacient.time <= 17) {
@@ -92,6 +99,8 @@ int main()
         if (it != doctors.end()) {  /// daca a gasit in vectorul de doctori, pacientul respectiv
             (*it).problems.emplace_back(pacient.name);   /// pune in vectorul de probleme rezolvate al doctorului respectiv, problema rezolvata
         }
+
+        pacients_stack.pop();
     }
 
     for (auto& doctor : doctors) {
