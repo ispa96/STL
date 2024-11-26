@@ -9,10 +9,16 @@ struct Doctor
 {
     std::string name;
     std::string speciality;
-    bool available = true;  /// by default este true
-    int start = 9;
-    int finish = 17;
+    bool available;
+    int start;
+    int finish;
     std::vector<std::string> problems;
+
+    Doctor() {
+        start = 9;
+        finish = 17;
+        available = false;
+    }
 };
 
 struct Pacient
@@ -21,6 +27,11 @@ struct Pacient
     std::string disease;
     int time;
     int priority;
+
+    Pacient() {
+        priority = 0;
+        time = 0;
+    }
 };
 
 bool operator==(const Pacient& p1,const Doctor& d2) {
@@ -79,7 +90,7 @@ int main()
     });
 
     std::stack<Pacient> pacients_stack;
-    for (auto& pacient : pacients)
+    for (const auto& pacient : pacients)
         pacients_stack.push(pacient);
 
     while(!pacients_stack.empty()) {
@@ -103,11 +114,11 @@ int main()
         pacients_stack.pop();
     }
 
-    for (auto& doctor : doctors) {
+    for (const auto& doctor : doctors) {
         if (doctor.problems.size()) {
             std::cout << doctor.name << ' ' << doctor.problems.size() << ' ';
 
-            for (auto& problem : doctor.problems)
+            for (const auto& problem : doctor.problems)
                 std::cout << problem << ' ';
 
             std::cout << '\n';
