@@ -4,20 +4,21 @@
 #include <string>
 #include <vector>
 #include <stack>
+// #include <map>
 
 struct Doctor
 {
     std::string name;
-    std::string speciality;
-    bool available;
     int start;
     int finish;
-    std::vector<std::string> problems;
+    int no_specialities;
+    std::vector<std::string> specialities;
+    std::vector<std::string> solved;
+    std::vector<int> hours;
 
     Doctor() {
         start = 9;
         finish = 17;
-        available = false;
     }
 };
 
@@ -25,101 +26,100 @@ struct Pacient
 {
     std::string name;
     std::string disease;
-    int time;
-    int priority;
-
-    Pacient() {
-        priority = 0;
-        time = 0;
-    }
+    int arrival_time, duration, priority;
 };
-
-bool operator==(const Pacient& p1,const Doctor& d2) {
-    if (p1.disease == d2.speciality and d2.available == true) {
-        return true;
-    }
-    else return false;
-}
 
 int main()
 {
-    std::ifstream inFile("input3.txt");
+    std::ifstream inFile("input2.txt");
 
     int no_problems, no_doctors;
-    int duration;
-    int _priority;
-    std::string name, speciality;
-    std::vector<Doctor> doctors;
     std::vector<Pacient> pacients;
+    std::vector<Doctor> doctors;
+
+    int _arrival, _duration, _priority;
+    std::string _problem, _speciality;
+
+    int _no_specialities;
+    std::string _name;
     
     inFile >> no_problems;
 
     for (int i = 0; i < no_problems; i++) {
-        inFile >> name;
-        inFile >> speciality;
-        inFile >> duration;
-        inFile >> _priority;
+        inFile >> _problem >> _speciality >> _arrival >> _duration >> _priority;
 
         Pacient p;
-        p.name = name;
-        p.disease = speciality;
-        p.time = duration;
+        p.name = _problem;
+        p.disease = _speciality;
+        p.arrival_time = _arrival;
+        p.duration = _duration;
         p.priority = _priority;
-        pacients.emplace_back(p);
 
-        // cout << name << ' ' << speciality << '\n';
+        pacients.emplace_back(p);
     }
 
     inFile >> no_doctors;
 
     for (int i = 0; i < no_doctors; i++) {
-        inFile >> name;
-        inFile >> speciality;
+        inFile >> _name >> _no_specialities;
 
         Doctor d;
-        d.name = name;
-        d.speciality = speciality;
-        doctors.emplace_back(d);
+        d.name = _name;
+        d.no_specialities = _no_specialities;
 
-        // cout << name << ' ' << speciality << '\n';
+        for (int j = 0; j < _no_specialities; j++)
+            inFile >> _speciality, d.specialities.emplace_back(_speciality);
+
+        doctors.emplace_back(d);
     }
 
-    /// sortam vectorul de pacienti in functie de prioritate
-    sort(pacients.begin(), pacients.end(), [](const Pacient& pacient1, const Pacient& pacient2) {
-        return pacient1.priority < pacient2.priority;
+    /// sortez vectorul de pacienti dupa arrival_time, apoi dupa priority
+    sort(pacients.begin(), pacients.end(), [](const auto& p1, const auto& p2) {
+        if (p1.arrival_time < p2.arrival_time)
+            return true;
+        else if (p1.arrival_time == p2.arrival_time) {
+            if (p1.priority > p2.priority)
+                return true;
+            else return false;
+        }
+        else return false;
     });
 
-    std::stack<Pacient> pacients_stack;
     for (const auto& pacient : pacients)
-        pacients_stack.push(pacient);
+        std::cout << pacient.name << ' ' << pacient.arrival_time << ' ' << pacient.priority << '\n';
 
-    while(!pacients_stack.empty()) {
-        Pacient pacient = pacients_stack.top();
+    /// luam fiecare pacient si vedem daca putem sa l luam sa l tratam
+    for (const auto& pacient : pacients) {
+        std::cout << pacient.name << '\n';
 
-        auto it = find_if(doctors.begin(), doctors.end(), [&pacient](Doctor& doctor) {
-            if (pacient.disease == doctor.speciality) {
-                if (doctor.start + pacient.time <= 17) {
-                    doctor.start += pacient.time;
-                    return true;
-                }
-                else return false;  
+        for (auto& doctor : doctors) {  /// cautam in vectorul de doctori sa vedem daca poate vreunul sa rezolve pacientul respectiv
+            /// daca doctorul are specialitatea necesara si timpul necesar, atunci poate sa l rezolve
+
+            auto it = std::find(doctor.specialities.begin(), doctor.specialities.end(), pacient.disease);
+
+            if (it != doctor.specialities.end() and pacient.arrival_time + pacient.duration <= doctor.finish and pacient.arrival_time >= doctor.start) {  /// a gasit la doctorul respectiv specializarea potrivita si are si timp
+                doctor.hours.emplace_back(pacient.arrival_time);    /// pune ora la care a rezolvat problema
+                doctor.solved.emplace_back(pacient.name);   /// pune problema pe care a rezolvat o
+                doctor.start = pacient.arrival_time + pacient.duration; /// actualizeaza ora de la care este disponibil doctorul
+
+                break;  /// iesim deoarece am rezolvat deja acest pacient
             }
-            else return false;
-        });
-
-        if (it != doctors.end()) {  /// daca a gasit in vectorul de doctori, pacientul respectiv
-            (*it).problems.emplace_back(pacient.name);   /// pune in vectorul de probleme rezolvate al doctorului respectiv, problema rezolvata
+            /// daca nu, continuam sa cautam
         }
 
-        pacients_stack.pop();
+        for (const auto& doctor : doctors) {
+            std::cout << doctor.name << ' ' << doctor.start << '\n';
+        }
+        std::cout << '\n';
     }
 
     for (const auto& doctor : doctors) {
-        if (doctor.problems.size()) {
-            std::cout << doctor.name << ' ' << doctor.problems.size() << ' ';
+        if (!doctor.solved.empty()) {
+            std::cout << doctor.name << ' ';
+            std::cout << doctor.solved.size() << ' ';
 
-            for (const auto& problem : doctor.problems)
-                std::cout << problem << ' ';
+            for (int i = 0; i < doctor.solved.size(); i++)
+                std::cout << doctor.solved[i] << ' ' << doctor.hours[i] << ' ';
 
             std::cout << '\n';
         }
