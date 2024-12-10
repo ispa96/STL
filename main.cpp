@@ -33,7 +33,7 @@ struct Pacient
 
 int main()
 {
-    std::ifstream inFile("input2.txt");
+    std::ifstream inFile("input4_bonus.txt");
 
     int no_problems, no_doctors;
     std::vector<Pacient> pacients;
@@ -44,7 +44,7 @@ int main()
 
     int _no_specialities;
     std::string _name;
-    
+
     inFile >> no_problems;
 
     for (int i = 0; i < no_problems; i++) {
@@ -85,14 +85,14 @@ int main()
             else return false;
         }
         else return false;
-    });
+        });
 
-    for (const auto& pacient : pacients)
-        std::cout << pacient.name << ' ' << pacient.arrival_time << ' ' << pacient.priority << '\n';
+   /* for (const auto& pacient : pacients)
+        std::cout << pacient.name << ' ' << pacient.arrival_time << ' ' << pacient.priority << '\n';*/
 
     /// luam fiecare pacient si vedem daca putem sa l luam sa l tratam
     for (const auto& pacient : pacients) {
-        std::cout << pacient.name << '\n';
+        // std::cout << pacient.name << '\n';
 
         for (auto& doctor : doctors) {  /// cautam in vectorul de doctori sa vedem daca poate vreunul sa rezolve pacientul respectiv
             /// daca doctorul are specialitatea necesara si timpul necesar, atunci poate sa l rezolve
@@ -109,10 +109,10 @@ int main()
             /// daca nu, continuam sa cautam
         }
 
-        for (const auto& doctor : doctors) {
+       /* for (const auto& doctor : doctors) {
             std::cout << doctor.name << ' ' << doctor.start << '\n';
         }
-        std::cout << '\n';
+        std::cout << '\n';*/
     }
 
     for (const auto& doctor : doctors) {
