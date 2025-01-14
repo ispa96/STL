@@ -30,13 +30,13 @@ struct Pacient
     int arrival_time, duration, priority;
 };
 
-int main()
-{
+std::vector<Pacient> pacients;
+std::vector<Doctor> doctors;
+
+static void reading_input(std::vector<Pacient>& paceints, std::vector<Doctor>& doctors) {
     std::ifstream inFile("input4_bonus.txt");
 
     int no_problems, no_doctors;
-    std::vector<Pacient> pacients;
-    std::vector<Doctor> doctors;
 
     int _arrival, _duration, _priority;
     std::string _problem, _speciality;
@@ -73,22 +73,9 @@ int main()
 
         doctors.emplace_back(d);
     }
+}
 
-    /// sortez vectorul de pacienti dupa arrival_time, apoi dupa priority
-    sort(pacients.begin(), pacients.end(), [](const auto& p1, const auto& p2) {
-        if (p1.arrival_time < p2.arrival_time)
-            return true;
-        else if (p1.arrival_time == p2.arrival_time) {
-            if (p1.priority > p2.priority)
-                return true;
-            else return false;
-        }
-        else return false;
-        });
-
-   /* for (const auto& pacient : pacients)
-        std::cout << pacient.name << ' ' << pacient.arrival_time << ' ' << pacient.priority << '\n';*/
-
+static void solving_pacients(std::vector<Pacient>& pacients, std::vector<Doctor>& doctors) {
     /// luam fiecare pacient si vedem daca putem sa l luam sa l tratam
     for (const auto& pacient : pacients) {
 
@@ -107,12 +94,14 @@ int main()
             /// daca nu, continuam sa cautam
         }
 
-       /* for (const auto& doctor : doctors) {
-            std::cout << doctor.name << ' ' << doctor.start << '\n';
-        }
-        std::cout << '\n';*/
+        /* for (const auto& doctor : doctors) {
+             std::cout << doctor.name << ' ' << doctor.start << '\n';
+         }
+         std::cout << '\n';*/
     }
+}
 
+static void print_doctors_details(const std::vector<Doctor>& doctors) {
     for (const auto& doctor : doctors) {
         if (!doctor.solved_problems.empty()) {
             std::cout << doctor.name << ' ';
@@ -124,6 +113,30 @@ int main()
             std::cout << '\n';
         }
     }
+}
+
+int main()
+{
+    reading_input(pacients, doctors);
+
+    /// sortez vectorul de pacienti dupa arrival_time, apoi dupa priority
+    sort(pacients.begin(), pacients.end(), [](const auto& p1, const auto& p2) {
+        if (p1.arrival_time < p2.arrival_time)
+            return true;
+        else if (p1.arrival_time == p2.arrival_time) {
+            if (p1.priority > p2.priority)
+                return true;
+            else return false;
+        }
+        else return false;
+        });
+
+   /* for (const auto& pacient : pacients)
+        std::cout << pacient.name << ' ' << pacient.arrival_time << ' ' << pacient.priority << '\n';*/
+
+    solving_pacients(pacients, doctors);
+  
+    print_doctors_details(doctors);
 
     return 0;
 }
