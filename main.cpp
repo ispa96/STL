@@ -6,7 +6,6 @@
 #include <string>
 #include <vector>
 #include <stack>
-// #include <map>
 
 struct Doctor
 {
@@ -15,8 +14,8 @@ struct Doctor
     int finish;
     int no_specialities;
     std::vector<std::string> specialities;
-    std::vector<std::string> solved;
-    std::vector<int> hours;
+    std::vector<std::string> solved_problems;
+    std::vector<int> solving_problems_hours;
 
     Doctor() {
         start = 9;
@@ -92,16 +91,15 @@ int main()
 
     /// luam fiecare pacient si vedem daca putem sa l luam sa l tratam
     for (const auto& pacient : pacients) {
-        // std::cout << pacient.name << '\n';
 
         for (auto& doctor : doctors) {  /// cautam in vectorul de doctori sa vedem daca poate vreunul sa rezolve pacientul respectiv
             /// daca doctorul are specialitatea necesara si timpul necesar, atunci poate sa l rezolve
 
-            auto it = std::find(doctor.specialities.begin(), doctor.specialities.end(), pacient.disease);
+            auto found_doctor = std::find(doctor.specialities.begin(), doctor.specialities.end(), pacient.disease);
 
-            if (it != doctor.specialities.end() and pacient.arrival_time + pacient.duration <= doctor.finish and pacient.arrival_time >= doctor.start) {  /// a gasit la doctorul respectiv specializarea potrivita si are si timp
-                doctor.hours.emplace_back(pacient.arrival_time);    /// pune ora la care a rezolvat problema
-                doctor.solved.emplace_back(pacient.name);   /// pune problema pe care a rezolvat o
+            if (found_doctor != doctor.specialities.end() and pacient.arrival_time + pacient.duration <= doctor.finish and pacient.arrival_time >= doctor.start) {  /// a gasit la doctorul respectiv specializarea potrivita si are si timp
+                doctor.solving_problems_hours.emplace_back(pacient.arrival_time);    /// pune ora la care a rezolvat problema
+                doctor.solved_problems.emplace_back(pacient.name);   /// pune problema pe care a rezolvat o
                 doctor.start = pacient.arrival_time + pacient.duration; /// actualizeaza ora de la care este disponibil doctorul
 
                 break;  /// iesim deoarece am rezolvat deja acest pacient
@@ -116,12 +114,12 @@ int main()
     }
 
     for (const auto& doctor : doctors) {
-        if (!doctor.solved.empty()) {
+        if (!doctor.solved_problems.empty()) {
             std::cout << doctor.name << ' ';
-            std::cout << doctor.solved.size() << ' ';
+            std::cout << doctor.solved_problems.size() << ' ';
 
-            for (int i = 0; i < doctor.solved.size(); i++)
-                std::cout << doctor.solved[i] << ' ' << doctor.hours[i] << ' ';
+            for (int i = 0; i < doctor.solved_problems.size(); i++)
+                std::cout << doctor.solved_problems[i] << ' ' << doctor.solving_problems_hours[i] << ' ';
 
             std::cout << '\n';
         }
